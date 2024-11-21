@@ -1,0 +1,7 @@
+{
+    "rank" : "Rang : ",
+    "phone": "Numéro : ",
+
+    "notify" : "Détails copiés",
+    "notify_desc" : "Les détails de l'avocat ont été copiés dans votre presse-papiers."
+}
