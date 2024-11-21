@@ -10,7 +10,7 @@ The menus are completely customisable, making it the perfect addition to your se
 - Supports ox_target and interact.
 - Locales: English, French & German.
 
-**Preview video:** [Click Here](https://youtu.be/96q8vfx50SA?si=Mc0Ix0J2iIUAZBqE)
+**Preview video:** [Click Here](https://youtu.be/2cmKQf8_O0c?si=_yNi-4hi4KZOKGJF)
 <br>
 
 > Dependencies:
