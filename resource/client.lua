@@ -54,44 +54,51 @@ CreateThread(function()
 end)
 
 
+local options = {}
+if not config.charges_menu_disabled then
+    table.insert(options, {
+        title = config.charges_menu.title,
+        description = config.charges_menu.description,
+        icon = config.charges_menu.icon,
+        iconColor = config.charges_menu.iconColor,
+        arrow = true,
+        onSelect = function()
+            lib.showContext('lawbook') -- do not change
+        end,
+    })
+end
+if not config.lawyers_menu.disabled then
+    table.insert(options, {
+        title = config.lawyers_menu.title,
+        description = config.lawyers_menu.description,
+        icon = config.lawyers_menu.icon,
+        iconColor = config.lawyers_menu.iconColor,
+        arrow = true,
+        onSelect = function()
+            lib.showContext('lawyers') -- do not change
+        end,
+    })
+end
+if not config.police_menu.disabled then
+    table.insert(options, {
+        title = config.police_menu.title,
+        description = config.police_menu.description,
+        icon = config.police_menu.icon,
+        iconColor = config.police_menu.iconColor,
+        arrow = true,
+        onSelect = function()
+            lib.showContext('police') -- do not change
+        end,
+    })
+end
+
 lib.registerContext({
     id = 'law_menu', -- do not change
     title = config.menuTitle,
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    options = {
-        {
-            title = config.menuChargeTitle,
-            description = config.menuChargeDescription,
-            icon = config.menuChargeIcon,
-            iconColor = config.menuChargeIconColor,
-			arrow = true,
-			onSelect = function()
-                lib.showContext('lawbook') -- do not change
-            end,
-        },
-		{
-            title = config.menuLawyersTitle,
-            description = config.menuLawyersDescription,
-            icon = config.menuLawyersIcon,
-            iconColor = config.menuLawyersIconColor,
-			arrow = true,
-			onSelect = function()
-                lib.showContext('lawyers') -- do not change
-            end,
-        },
-		{
-            title = config.menuPoliceTitle,
-            description = config.menuPoliceDescription,
-            icon = config.menuPoliceIcon,
-            iconColor = config.menuPoliceIconColor,
-			arrow = true,
-			onSelect = function()
-                lib.showContext('police') -- do not change
-            end,
-        },
-    }
+    options = options,
 })
 
 		

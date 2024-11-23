@@ -25,22 +25,30 @@ return {
 
     menuTitle = 'Charges & Legal Assistance',
     
-    menuChargeIcon = 'fa-list',
-    menuChargeIconColor = '',
-    menuChargeTitle = 'List of Charges',
-    menuChargeDescription = 'View the list of charges issued by the Victoria Police.',
+    charges_menu = {
+        disabled = false,
+        title = 'List of Charges',
+        description = 'View the list of charges issued by the Victoria Police.',
+        icon = 'fa-list',
+        iconColor = '',
+    },
     
-    menuLawyersIcon = 'fa-users',
-    menuLawyersIconColor = '',
-    menuLawyersTitle = 'Approved Lawyers',
-    menuLawyersDescription = 'Obtain contact details for approved Lawyers - not to be used with malicious intent.',
-    
-    menuPoliceIcon = 'fa-building-shield',
-    menuPoliceIconColor = '',
-    menuPoliceTitle = 'Current Police Leadership',
-    menuPoliceDescription = 'Current Victoria Police leadership members. Request a meeting via the front desk or 000.',
-    
+    lawyers_menu = {
+        disabled = false,
+        title = 'Approved Lawyers',
+        description = 'Obtain contact details for approved Lawyers.',
+        icon = 'fa-users',
+        iconColor = '',
+    },
 
+    police_menu = {
+        disabled = false,
+        title = 'Current Police Leadership',
+        description = 'Current Victoria Police leadership members. Request a meeting via the front desk or 000.',
+        icon = 'fa-shield',
+        iconColor = '',
+    },
+   
     lawyersTitle = 'Approved Lawyers',
     lawyersColor = '#76A9D2',
     lawyerIcon = 'fa-user',
