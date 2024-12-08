@@ -1,6 +1,18 @@
 lib.locale()
 local config = require('config')
 
+CreateThread(function()
+    if config.blip.enabled then
+        local lawmenuBlip = AddBlipForCoord(config.ped.coords.x, config.ped.coords.y, config.ped.coords.z)
+        SetBlipSprite(lawmenuBlip, config.blip.sprite)
+        SetBlipColour(lawmenuBlip, config.blip.spriteColor)
+        SetBlipScale(lawmenuBlip, config.blip.scale)
+        SetBlipAsShortRange(lawmenuBlip, true)
+        BeginTextCommandSetBlipName('STRING')
+        AddTextComponentString(config.blip.label)
+        EndTextCommandSetBlipName(lawmenuBlip)
+    end
+end)
 
 CreateThread(function()
     local pedModel = GetHashKey(config.ped.model)
