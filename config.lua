@@ -5,6 +5,14 @@ return {
     animation = 'e clipboard', -- animation when looking at the menu
     cancelAnim = 'e c', -- to cancel the animation
 
+    blip = {
+        enabled = true,
+        label = 'Laws & Charges',
+        sprite = 133,
+        spriteColor = 3,
+        scale = 0.8,
+    },
+    
     target = {
         label = 'Charges & Legal Assistance', -- only visible if useTarget is true
         icon = 'fa-solid fa-book',
