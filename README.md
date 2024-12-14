@@ -12,6 +12,8 @@ The menus are completely customisable, making it the perfect addition to your se
 
 **Preview video:** [Click Here](https://youtu.be/2cmKQf8_O0c?si=_yNi-4hi4KZOKGJF)
 <br>
+**Documentation:** [Click Here](https://s4t4n667.gitbook.io/asgaard-developments/free-scripts/s4t4n667_lawmenu)
+<br>
 
 > Dependencies:
 > <br>
