@@ -5,7 +5,7 @@ lua54 'yes'
 
 author "Asgaard Developments | s4t4n667"
 description 'Charges list, Lawyer contacts and Police contacts.'
-version '1.0.0'
+version '1.0.2'
 
 shared_script {
     '@ox_lib/init.lua',
