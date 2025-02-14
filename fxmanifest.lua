@@ -14,9 +14,13 @@ shared_script {
 
 client_scripts {
     'resource/client.lua',
-	'resource/charges.lua',
+    'resource/charges.lua',
     'resource/lawyers.lua',
     'resource/police.lua'
+}
+
+server_scripts {
+	'server.lua',
 }
 
 files {
