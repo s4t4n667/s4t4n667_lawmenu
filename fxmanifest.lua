@@ -20,7 +20,7 @@ client_scripts {
 }
 
 server_scripts {
-	'server.lua',
+	'resource/server.lua',
 }
 
 files {
