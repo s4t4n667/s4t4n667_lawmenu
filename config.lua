@@ -25,10 +25,17 @@ return {
         viewDistance = 3.0,
     },
 
-    ped = {
-        model = "S_M_Y_Cop_01", -- Example ped model
-        coords = vector4(433.35, -985.87, 30.71, 56.85),
-        scenario = 'WORLD_HUMAN_CLIPBOARD',
+    peds = {
+        {
+            model = "s_m_y_cop_01",
+            coords = vector4(435.8683, -974.1058, 30.7159, 103.2693),
+            scenario = "WORLD_HUMAN_CLIPBOARD",
+        },
+        {
+            model = "s_m_y_cop_01",
+            coords = vector4(435.6445, -973.1556, 30.7134, 118.1932),
+            scenario = "WORLD_HUMAN_CLIPBOARD",
+        }
     },
 
     menuTitle = 'Charges & Legal Assistance',

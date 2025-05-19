@@ -3,68 +3,71 @@ local config = require('config')
 
 CreateThread(function()
     if config.blip.enabled then
-        local lawmenuBlip = AddBlipForCoord(config.ped.coords.x, config.ped.coords.y, config.ped.coords.z)
-        SetBlipSprite(lawmenuBlip, config.blip.sprite)
-        SetBlipColour(lawmenuBlip, config.blip.spriteColor)
-        SetBlipScale(lawmenuBlip, config.blip.scale)
-        SetBlipAsShortRange(lawmenuBlip, true)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString(config.blip.label)
-        EndTextCommandSetBlipName(lawmenuBlip)
-    end
-end)
-
-CreateThread(function()
-    local pedModel = GetHashKey(config.ped.model)
-    RequestModel(pedModel)
-    while not HasModelLoaded(pedModel) do
-        Wait(0)
-    end
-
-    local ped = CreatePed(4, pedModel, config.ped.coords.x, config.ped.coords.y, config.ped.coords.z - 1.0, config.ped.coords.w, false, true)
-    SetEntityInvincible(ped, true)
-    TaskStartScenarioInPlace(ped, config.ped.scenario, 0.0, true)
-    FreezeEntityPosition(ped, true)
-    SetBlockingOfNonTemporaryEvents(ped, true)
-
-    if config.useTarget then
-        exports.ox_target:addBoxZone({
-            coords = vec3(config.ped.coords.x, config.ped.coords.y, config.ped.coords.z),
-            size = vec3(1, 1, 1),
-            debug = drawZones,
-            options = {
-                {
-                    icon = config.target.icon,
-                    label = config.target.label,
-					distance = config.target.distance,
-                    onSelect = function()
-                        lib.showContext('law_menu')
-                        ExecuteCommand(config.animation)
-                    end,
-                    onExit = function()
-                        ExecuteCommand('e c')
-                    end,
-                },
-            },
-        })
-    else
-        while true do
-            Wait(0)
-            local playerCoords = GetEntityCoords(PlayerPedId())
-            local distance = #(playerCoords - vec3(config.ped.coords.x, config.ped.coords.y, config.ped.coords.z))
-
-            if distance < config.text.viewDistance then
-                Draw3DText(config.ped.coords.x, config.ped.coords.y, config.ped.coords.z + 1.0, config.text.label, config.text.size or 0.5)
-
-                if IsControlJustPressed(0, 38) and distance < 2.0 then
-                    lib.showContext('law_menu')
-                    ExecuteCommand(config.animation)
-                end
-            end
+        for _, pedData in pairs(config.peds) do
+            local blip = AddBlipForCoord(pedData.coords.x, pedData.coords.y, pedData.coords.z)
+            SetBlipSprite(blip, config.blip.sprite)
+            SetBlipColour(blip, config.blip.spriteColor)
+            SetBlipScale(blip, config.blip.scale)
+            SetBlipAsShortRange(blip, true)
+            BeginTextCommandSetBlipName("STRING")
+            AddTextComponentString(config.blip.label)
+            EndTextCommandSetBlipName(blip)
         end
     end
 end)
 
+CreateThread(function()
+    for _, pedData in pairs(config.peds) do
+        local pedModel = GetHashKey(pedData.model)
+        RequestModel(pedModel)
+        while not HasModelLoaded(pedModel) do Wait(0) end
+
+        local ped = CreatePed(4, pedModel, pedData.coords.x, pedData.coords.y, pedData.coords.z - 1.0, pedData.coords.w, false, true)
+        SetEntityInvincible(ped, true)
+        TaskStartScenarioInPlace(ped, pedData.scenario, 0.0, true)
+        FreezeEntityPosition(ped, true)
+        SetBlockingOfNonTemporaryEvents(ped, true)
+
+        if config.useTarget then
+            exports.ox_target:addBoxZone({
+                coords = vec3(pedData.coords.x, pedData.coords.y, pedData.coords.z),
+                size = vec3(1, 1, 1),
+                debug = config.drawZones,
+                options = {
+                    {
+                        icon = config.target.icon,
+                        label = config.target.label,
+                        distance = config.target.distance,
+                        onSelect = function()
+                            lib.showContext('law_menu')
+                            ExecuteCommand(config.animation)
+                        end,
+                        onExit = function()
+                            ExecuteCommand('e c')
+                        end,
+                    },
+                },
+            })
+        else
+            CreateThread(function()
+                while true do
+                    Wait(0)
+                    local playerCoords = GetEntityCoords(PlayerPedId())
+                    local distance = #(playerCoords - vec3(pedData.coords.x, pedData.coords.y, pedData.coords.z))
+
+                    if distance < config.text.viewDistance then
+                        Draw3DText(pedData.coords.x, pedData.coords.y, pedData.coords.z + 1.0, config.text.label, config.text.size or 0.5)
+
+                        if IsControlJustPressed(0, 38) and distance < 2.0 then
+                            lib.showContext('law_menu')
+                            ExecuteCommand(config.animation)
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
 
 local options = {}
 if not config.charges_menu_disabled then
