@@ -4,11 +4,11 @@ local config = require('config')
 ----- MENU1 -----
 lib.registerContext({
     id = 'menu1', -- do not change
-    title = 'Assault Charges',
+    title = config.menu1.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Assault Government Service Worker',
@@ -59,11 +59,11 @@ lib.registerContext({
 ----- MENU2 -----
 lib.registerContext({
     id = 'menu2', -- do not change
-    title = 'Conduct Charges',
+    title = config.menu2.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Breach of Enforced Outlaw Order',
@@ -167,11 +167,11 @@ lib.registerContext({
 ----- MENU3 -----
 lib.registerContext({
     id = 'menu3', -- do not change
-    title = 'Custody-related Charges',
+    title = config.menu3.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Escape Lawful Custody',
@@ -201,11 +201,11 @@ lib.registerContext({
 ----- MENU4 -----
 lib.registerContext({
     id = 'menu4', -- do not change
-    title = 'Theft Charges',
+    title = config.menu4.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Armed Robbery',
@@ -301,11 +301,11 @@ lib.registerContext({
 ----- MENU5 -----
 lib.registerContext({
     id = 'menu5', -- do not change
-    title = 'Traffic Offences',
+    title = config.menu5.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Dangerous / Negligent Driving',
@@ -430,11 +430,11 @@ lib.registerContext({
 ----- MENU6 -----
 lib.registerContext({
     id = 'menu6',
-    title = 'Weapons-related Charges',
+    title = config.menu6.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Assault with a Deadly Weapon',
@@ -583,11 +583,11 @@ lib.registerContext({
 ----- MENU7 -----
 lib.registerContext({
     id = 'menu7', -- do not change
-    title = 'Drugs-related Charges',
+    title = config.menu7.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Cultivation of Narcotic Plants',
@@ -649,11 +649,11 @@ lib.registerContext({
 ----- MENU8 -----
 lib.registerContext({
     id = 'menu8', -- do not change
-    title = 'Fraud Charges',
+    title = config.menu8.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = 'Bribery',
@@ -705,11 +705,11 @@ lib.registerContext({
 ----- MENU9 -----
 lib.registerContext({
     id = 'menu9', -- do not change
-    title = 'Misc Charges',
+    title = config.menu9.title,
+    menu = 'lawbook', -- do not change
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    menu = 'lawbook', -- do not change
     options = {
         {
             title = '(Insp+ Auth) Operate an Aircraft in an Unsafe or Unauthorised Manner',
