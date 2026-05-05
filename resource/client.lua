@@ -3,12 +3,13 @@ local config = require('config')
 
 CreateThread(function()
     if config.blip.enabled then
-        for _, pedData in pairs(config.peds) do
-            local blip = AddBlipForCoord(pedData.coords.x, pedData.coords.y, pedData.coords.z)
+        for _, location in pairs(config.blip.coords) do
+            local blip = AddBlipForCoord(location.x, location.y, location.z)
             SetBlipSprite(blip, config.blip.sprite)
             SetBlipColour(blip, config.blip.spriteColor)
             SetBlipScale(blip, config.blip.scale)
             SetBlipAsShortRange(blip, true)
+
             BeginTextCommandSetBlipName("STRING")
             AddTextComponentString(config.blip.label)
             EndTextCommandSetBlipName(blip)
@@ -16,53 +17,70 @@ CreateThread(function()
     end
 end)
 
+function Draw3DText(x, y, z, text, size)
+    SetDrawOrigin(x, y, z, 0)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextScale(size, size)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(1)
+    AddTextComponentString(text)
+    DrawText(0.0, 0.0)
+    ClearDrawOrigin()
+end
+
 CreateThread(function()
-    for _, pedData in pairs(config.peds) do
-        local pedModel = GetHashKey(pedData.model)
-        RequestModel(pedModel)
-        while not HasModelLoaded(pedModel) do Wait(0) end
+    for _, loc in pairs(config.locations) do
 
-        local ped = CreatePed(4, pedModel, pedData.coords.x, pedData.coords.y, pedData.coords.z - 1.0, pedData.coords.w, false, true)
-        SetEntityInvincible(ped, true)
-        TaskStartScenarioInPlace(ped, pedData.scenario, 0.0, true)
-        FreezeEntityPosition(ped, true)
-        SetBlockingOfNonTemporaryEvents(ped, true)
+        local coords = vec3(loc.coords.x, loc.coords.y, loc.coords.z)
 
-        if config.useTarget then
+        if loc.ped then
+            local model = loc.ped
+            RequestModel(model)
+            while not HasModelLoaded(model) do Wait(0) end
+            local ped = CreatePed( 4,  model,  loc.coords.x,  loc.coords.y,  loc.coords.z - 1.0,  loc.coords.w,  false,  true)
+
+            SetEntityInvincible(ped, true)
+            FreezeEntityPosition(ped, true)
+            SetBlockingOfNonTemporaryEvents(ped, true)
+            TaskStartScenarioInPlace(ped, loc.scenario, 0.0, true)
+        end
+        if loc.interactionMode == "target" then
             exports.ox_target:addBoxZone({
-                coords = vec3(pedData.coords.x, pedData.coords.y, pedData.coords.z),
-                size = vec3(1, 1, 1),
+                coords = coords,
+                size = vec3(1.0, 1.0, 1.0),
                 debug = config.drawZones,
                 options = {
                     {
-                        icon = config.target.icon,
-                        label = config.target.label,
-                        distance = config.target.distance,
+                        icon = loc.icon,
+                        label = loc.label,
+                        distance = loc.distance or 2.0,
                         onSelect = function()
                             lib.showContext('law_menu')
                             ExecuteCommand(config.animation)
                         end,
-                        onExit = function()
-                            ExecuteCommand('e c')
-                        end,
-                    },
-                },
+                    }
+                }
             })
-        else
+        end
+        if loc.interactionMode == "3dtext" then
             CreateThread(function()
                 while true do
-                    Wait(0)
-                    local playerCoords = GetEntityCoords(PlayerPedId())
-                    local distance = #(playerCoords - vec3(pedData.coords.x, pedData.coords.y, pedData.coords.z))
+                    local sleep = 1000
+                    local playerPed = PlayerPedId()
+                    local dist = #(GetEntityCoords(playerPed) - coords)
 
-                    if distance < config.text.viewDistance then
-                        Draw3DText(pedData.coords.x, pedData.coords.y, pedData.coords.z + 1.0, config.text.label, config.text.size or 0.5)
+                    if dist < (loc.viewDistance or 3.0) then
+                        sleep = 0
+                        Draw3DText(coords.x, coords.y, coords.z + 1.0, loc.label, loc.size or 0.4)
 
-                        if IsControlJustPressed(0, 38) and distance < 2.0 then
+                        if dist < 2.0 and IsControlJustPressed(0, 38) then
                             lib.showContext('law_menu')
                             ExecuteCommand(config.animation)
                         end
                     end
+                    Wait(sleep)
                 end
             end)
         end
@@ -70,63 +88,58 @@ CreateThread(function()
 end)
 
 local options = {}
-if not config.charges_menu_disabled then
-    table.insert(options, {
-        title = config.charges_menu.title,
-        description = config.charges_menu.description,
-        icon = config.charges_menu.icon,
-        iconColor = config.charges_menu.iconColor,
-        arrow = true,
-        onSelect = function()
-            lib.showContext('lawbook') -- do not change
-        end,
-    })
-end
-if not config.lawyers_menu.disabled then
-    table.insert(options, {
-        title = config.lawyers_menu.title,
-        description = config.lawyers_menu.description,
-        icon = config.lawyers_menu.icon,
-        iconColor = config.lawyers_menu.iconColor,
-        arrow = true,
-        onSelect = function()
-            lib.showContext('lawyers') -- do not change
-        end,
-    })
-end
-if not config.police_menu.disabled then
-    table.insert(options, {
-        title = config.police_menu.title,
-        description = config.police_menu.description,
-        icon = config.police_menu.icon,
-        iconColor = config.police_menu.iconColor,
-        arrow = true,
-        onSelect = function()
-            lib.showContext('police') -- do not change
-        end,
-    })
+local menus = {
+    {
+        config = config.charges_menu,
+        context = "lawbook",
+    },
+    {
+        config = config.lawyer_menu,
+        context = "lawyers",
+    },
+    {
+        config = config.police_menu,
+        context = "police",
+    }
+}
+
+for _, menu in ipairs(menus) do
+    local cfg = menu.config
+
+    if cfg and cfg.enabled then
+        options[#options + 1] = {
+            title = cfg.title,
+            description = cfg.description,
+            icon = cfg.icon,
+            iconColor = cfg.iconColor,
+            arrow = cfg.arrow,
+
+            onSelect = function()
+                lib.showContext(menu.context)
+            end
+        }
+    end
 end
 
 lib.registerContext({
-    id = 'law_menu', -- do not change
-    title = config.menuTitle,
+    id = 'law_menu',
+    title = config.menuTitle or "Law Menu",
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
-    options = options,
+    options = options
 })
 
-		
 lib.registerContext({
-    id = 'lawbook', -- do not change
-    title = config.chargesHeading,
+    id = 'lawbook',
+    title = config.charges_menu.menuTitle,
     onExit = function()
         ExecuteCommand(config.cancelAnim)
     end,
 	menu = 'law_menu',
     options = {
 		{
-            description = config.chargesDescription,
+            description = config.charges_menu.menuDescription,
         },
 		{
             title = config.menu1.title,
@@ -135,7 +148,7 @@ lib.registerContext({
             iconColor = config.menu1.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu1') -- do not change
+                lib.showContext('menu1')
             end,
         },
         {
@@ -145,7 +158,7 @@ lib.registerContext({
             iconColor = config.menu2.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu2') -- do not change
+                lib.showContext('menu2')
             end,
         },
         {
@@ -155,7 +168,7 @@ lib.registerContext({
             iconColor = config.menu3.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu3') -- do not change
+                lib.showContext('menu3')
             end,
         },
         {
@@ -165,7 +178,7 @@ lib.registerContext({
             iconColor = config.menu4.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu4') -- do not change
+                lib.showContext('menu4')
             end,
         },
         {
@@ -175,7 +188,7 @@ lib.registerContext({
             iconColor = config.menu5.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu5') -- do not change
+                lib.showContext('menu5')
             end,
         },
         {
@@ -185,7 +198,7 @@ lib.registerContext({
             iconColor = config.menu6.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu6') -- do not change
+                lib.showContext('menu6')
             end,
         },
         {
@@ -195,7 +208,7 @@ lib.registerContext({
             iconColor = config.menu7.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu7') -- do not change
+                lib.showContext('menu7')
             end,
         },
         {
@@ -205,7 +218,7 @@ lib.registerContext({
             iconColor = config.menu8.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu8') -- do not change
+                lib.showContext('menu8')
             end,
         },
         {
@@ -215,22 +228,62 @@ lib.registerContext({
 			iconColor = config.menu9.iconColor,
             arrow = true,
             onSelect = function()
-                lib.showContext('menu9') -- do not change
+                lib.showContext('menu9')
             end,
         },
     }
 })
 
+---- POLICE MENU
+CreateThread(function()
+    local policeOptions = {}
 
-function Draw3DText(x, y, z, text)
-    SetDrawOrigin(x, y, z, 0)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextScale(config.text.size, config.text.size)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(1)
-    AddTextComponentString(text)
-    DrawText(0.0, 0.0)
-    ClearDrawOrigin()
-end
+    for _, police in ipairs(config.police_menu.info) do
+        policeOptions[#policeOptions + 1] = {
+            title = police.name,
+            description = locale('rank') .. police.rank,
+            icon = config.police_menu.menuIcons,
+            iconColor = config.police_menu.menuIconColors,
+        }
+    end
+
+    lib.registerContext({
+        id = 'police',
+        title = config.police_menu.title,
+        menu = 'law_menu',
+        onExit = function()
+            ExecuteCommand(config.cancelAnim)
+        end,
+        options = policeOptions
+    })
+end)
+
+----- LAWYER MENU
+CreateThread(function()
+    local lawyerOptions = {}
+
+    for _, lawyer in ipairs(config.lawyer_menu.info) do
+        lawyerOptions[#lawyerOptions + 1] = {
+            title = lawyer.name,
+            description = locale('phone') .. " " .. lawyer.phone,
+            icon = config.lawyer_menu.menuIcons or "circle",
+            iconColor = config.lawyer_menu.menuIconColors or "",
+
+            onSelect = function()
+                if not config.lawyer_menu.copyNumbers then ExecuteCommand(config.cancelAnim) return end
+
+                lib.setClipboard(lawyer.phone)
+                ExecuteCommand(config.cancelAnim)
+
+                lib.notify({id = 'lawyer_copy',  title = locale('notify'), description = locale('notify_desc'), type = 'success', position = 'top-right'})
+            end
+        }
+    end
+
+    lib.registerContext({
+        id = 'lawyers',
+        title = config.lawyer_menu.title,
+        menu = 'law_menu',
+        options = lawyerOptions
+    })
+end)
